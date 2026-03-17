@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Głosowanie Pi - XX LO</title>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root { --primary: #6c5ce7; --accent: #00d2ff; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63);
+            color: white;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header { text-align: center; padding: 30px; }
+        .container {
+            width: 90%;
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(15px);
+            border-radius: 25px;
+            padding: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        #reader { width: 100%; border-radius: 15px; overflow: hidden; }
+        
+        .status-card {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 12px;
+            display: none;
+            font-weight: 600;
+        }
+        .success { background: rgba(46, 204, 113, 0.2); border: 1px solid #2ecc71; color: #2ecc71; }
+        .error { background: rgba(231, 76, 60, 0.2); border: 1px solid #e74c3c; color: #e74c3c; }
+
+        .school-info { font-size: 0.8rem; color: var(--accent); letter-spacing: 2px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="school-info">XX LICEUM OGÓLNOKSZTAŁCĄCE</div>
+        <h1>Głosowanie: Dzień Pi 𝜋</h1>
+    </header>
+
+    <div class="container">
+        <div id="reader"></div>
+        <div id="status-box" class="status-card"></div>
+    </div>
+
+    <script>
+        const statusBox = document.getElementById('status-box');
+
+        function onScanSuccess(decodedText) {
+            // SPRAWDZENIE: Czy w pamięci telefonu jest już wpis o głosowaniu?
+            const hasVoted = localStorage.getItem('voted_pi_2026');
+
+            if (hasVoted) {
+                statusBox.className = "status-card error";
+                statusBox.innerHTML = "❌ Błąd: Już oddałeś swój głos!";
+                statusBox.style.display = "block";
+            } else {
+                // ZAPISANIE GŁOSU: Dodajemy informację do pamięci telefonu
+                localStorage.setItem('voted_pi_2026', 'true');
+                
+                statusBox.className = "status-card success";
+                statusBox.innerHTML = "✅ Zeskanowano: " + decodedText + "<br>Głos został zapisany!";
+                statusBox.style.display = "block";
+
+                // Tutaj możesz dodać przekierowanie do ankiety, jeśli kod był linkiem:
+                if(decodedText.startsWith('http')) {
+                    setTimeout(() => { window.location.href = decodedText; }, 2000);
+                }
+            }
+        }
+
+        let html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 15, qrbox: 250 });
+        html5QrcodeScanner.render(onScanSuccess);
+    </script>
+</body>
+</html>
