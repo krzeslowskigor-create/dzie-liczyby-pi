@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skaner QR - Dzień Liczby Pi - XX LO</title>
+    
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #6c5ce7;
+            --accent-color: #00d2ff;
+            --bg-dark: #0f0c29;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: white;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Tło z symbolem Pi */
+        body::before {
+            content: "π";
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 80vh;
+            color: rgba(255, 255, 255, 0.03);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .school-name {
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            color: var(--accent-color);
+            margin-bottom: 5px;
+        }
+
+        h1 {
+            font-weight: 600;
+            font-size: 2.2rem;
+            margin: 0;
+            background: linear-gradient(to right, #fff, var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            padding: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+
+        /* Stylizacja okna kamery */
+        #reader {
+            width: 100%;
+            border-radius: 20px;
+            overflow: hidden;
+            border: none !important; /* Usuwamy domyślne ramki biblioteki */
+            background: #000;
+        }
+
+        /* Stylizacja przycisków wewnątrz biblioteki */
+        button {
+            background: var(--primary-color) !important;
+            color: white !important;
+            border: none !important;
+            padding: 12px 25px !important;
+            border-radius: 10px !important;
+            cursor: pointer !important;
+            font-family: 'Poppins', sans-serif !important;
+            font-weight: 600 !important;
+            transition: 0.3s !important;
+            margin: 10px !important;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            background: #5b4bc4 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4);
+        }
+
+        #result-display {
+            margin-top: 25px;
+            padding: 20px;
+            background: rgba(0, 210, 255, 0.1);
+            border-left: 5px solid var(--accent-color);
+            border-radius: 10px;
+            display: none;
+            animation: slideIn 0.5s ease;
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 20px;
+            font-size: 0.8rem;
+            opacity: 0.6;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="school-name">Organizator: XX Liceum Ogólnokształcące</div>
+        <h1>Dzień Liczby Pi 2026 𝜋</h1>
+    </header>
+
+    <div class="container">
+        <p>Zeskanuj kod QR, aby sprawdzić zadanie lub wynik</p>
+        
+        <div id="reader"></div>
+
+        <div id="result-display">
+            <p style="margin: 0; font-size: 0.8rem; text-transform: uppercase; color: var(--accent-color);">Wykryto zawartość:</p>
+            <div id="scanned-result" style="font-size: 1.1rem; margin-top: 10px; word-break: break-all;"></div>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2026 XX LO - Projekt na Dzień Liczby Pi
+    </footer>
+
+    <script>
+        const resultDisplay = document.getElementById('result-display');
+        const resultText = document.getElementById('scanned-result');
+
+        function onScanSuccess(decodedText) {
+            resultDisplay.style.display = 'block';
+            
+            // Sprawdzanie czy to URL
+            if (decodedText.startsWith('http')) {
+                resultText.innerHTML = `<a href="${decodedText}" target="_blank" style="color: #fff; text-decoration: underline;">Otwórz link: ${decodedText}</a>`;
+            } else {
+                resultText.innerText = decodedText;
+            }
+
+            // Opcjonalnie: dźwięk sukcesu
+            // const audio = new Audio('https://www.soundjay.com/buttons/beep-07a.mp3');
+            // audio.play();
+        }
+
+        let html5QrcodeScanner = new Html5QrcodeScanner(
+            "reader", 
+            { 
+                fps: 20, 
+                qrbox: {width: 280, height: 280},
+                aspectRatio: 1.0 
+            }
+        );
+        
+        html5QrcodeScanner.render(onScanSuccess);
+    </script>
+</body>
+</html>
